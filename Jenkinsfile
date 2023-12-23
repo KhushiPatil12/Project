@@ -5,9 +5,9 @@ pipeline {
         NAME = "spring-app"
         VERSION = "${env.BUILD_ID}"
         GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
-        IMAGE_REPO = "praveensirvi"
-        GIT_REPO_NAME = "DevOps_MasterPiece-CD-with-argocd"
-        GIT_USER_NAME = "praveensirvi1212"
+        IMAGE_REPO = "khushipatil12"
+        GIT_REPO_NAME = "Argocd"
+        GIT_USER_NAME = "Khushipatil12"
        
     }
 
@@ -17,7 +17,7 @@ pipeline {
     stages {
         stage('Checkout git') {
             steps {
-              git branch: 'main', url:'https://github.com/praveensirvi1212/DevOps_MasterPiece-CI-with-Jenkins.git'
+              git branch: 'master', url:'https://github.com/KhushiPatil12/Project.git'
             }
         }
         
@@ -31,10 +31,10 @@ pipeline {
             steps{
                 withSonarQubeEnv('SonarQube-server') {
                         sh '''mvn clean verify sonar:sonar \
-                        -Dsonar.projectKey=gitops-with-argocd \
-                        -Dsonar.projectName='gitops-with-argocd' \
-                        -Dsonar.host.url=$sonarurl \
-                        -Dsonar.login=$sonarlogin'''
+                        -Dsonar.projectKey=sqp_2adbfe699503571f6213c3fe62c0b25ba1f7c6cc \
+                        -Dsonar.projectName='DevOps-Project' \
+                        -Dsonar.host.url=$Sonarurl \
+                        -Dsonar.login=$Sonarlogin'''
                 }
             }
         }
@@ -56,7 +56,7 @@ pipeline {
             steps {
                 script {
                     try {
-                        def server = Artifactory.newServer url: 'http://13.232.95.58:8082/artifactory', credentialsId: 'jfrog-cred'
+                        def server = Artifactory.newServer url: 'http://54.83.140.160:8082/artifactory', credentialsId: 'jfrog-cred'
                         def uploadSpec = """{
                             "files": [
                                 {
@@ -92,14 +92,14 @@ pipeline {
               steps {
                   
                 //  sh 'aws configure set aws_access_key_id "$AWS_ACCESS_KEY_ID"  && aws configure set aws_secret_access_key "$AWS_ACCESS_KEY_SECRET"  && aws configure set region ap-south-1  && aws configure set output "json"' 
-                  sh 'aws s3 cp report.html s3://devops-mastepiece/'
+                  sh 'aws s3 cp report.html s3://devops-project/'
               }
         }
         
         stage ('Docker Image Push') {
             steps {
-                withVault(configuration: [skipSslVerification: true, timeout: 60, vaultCredentialId: 'vault-token', vaultUrl: 'http://13.232.53.209:8200'], vaultSecrets: [[path: 'secrets/creds/docker', secretValues: [[vaultKey: 'username'], [vaultKey: 'password']]]]) {
-                    
+                {
+                    withCredentials([usernamePassword(credentialsId: '7d70f096-dcbe-4f64-a3f4-fe76c6c548a9', passwordVariable: 'password', usernameVariable: 'username')]) 
                     sh "docker login -u ${username} -p ${password} "
                     sh 'docker push ${IMAGE_REPO}/${NAME}:${VERSION}-${GIT_COMMIT}'
                     sh 'docker rmi  ${IMAGE_REPO}/${NAME}:${VERSION}-${GIT_COMMIT}'
@@ -111,17 +111,17 @@ pipeline {
         stage('Clone/Pull k8s deployment Repo') {
             steps {
                 script {
-                    if (fileExists('DevOps_MasterPiece-CD-with-argocd')) {
+                    if (fileExists('Argocd')) {
 
                         echo 'Cloned repo already exists - Pulling latest changes'
 
-                        dir("DevOps_MasterPiece-CD-with-argocd") {
+                        dir("Argocd") {
                           sh 'git pull'
                         }
 
                     } else {
                         echo 'Repo does not exists - Cloning the repo'
-                        sh 'git clone -b feature https://github.com/praveensirvi1212/DevOps_MasterPiece-CD-with-argocd.git'
+                        sh 'git clone -b feature https://github.com/KhushiPatil12/Argocd.git'
                     }
                 }
             }
@@ -129,8 +129,8 @@ pipeline {
         
         stage('Update deployment Manifest') {
             steps {
-                dir("DevOps_MasterPiece-CD-with-argocd/yamls") {
-                    sh 'sed -i "s#praveensirvi.*#${IMAGE_REPO}/${NAME}:${VERSION}-${GIT_COMMIT}#g" deployment.yaml'
+                dir("Argocd/yamls") {
+                    sh 'sed -i "s#khushipatil12.*#${IMAGE_REPO}/${NAME}:${VERSION}-${GIT_COMMIT}#g" deployment.yaml'
                     sh 'cat deployment.yaml'
                 }
             }
@@ -138,9 +138,9 @@ pipeline {
         
         stage('Commit & Push changes to feature branch') {
             steps {
-                withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'GITHUB_TOKEN')]) {
-                    dir("DevOps_MasterPiece-CD-with-argocd/yamls") {
-                        sh "git config --global user.email 'praveen@gmail.com'"
+                withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+                    dir("Argocd/yamls") {
+                        sh "git config --global user.email 'khushipatil4466@gmail.com'"
                         sh 'git remote set-url origin https://${GITHUB_TOKEN}@github.com/${GIT_USER_NAME}/${GIT_REPO_NAME}'
                         sh 'git checkout feature'
                         sh 'git add deployment.yaml'
@@ -153,8 +153,8 @@ pipeline {
         
         stage('Raise PR') {
             steps {
-                withCredentials([string(credentialsId: 'GITHUB_TOKEN', variable: 'GITHUB_TOKEN')]) {
-                    dir("DevOps_MasterPiece-CD-with-argocd/yamls") {
+                withCredentials([string(credentialsId: 'github', variable: 'GITHUB_TOKEN')]) {
+                    dir("Argocd/yamls") {
                         sh '''
                             set +u
                             unset GITHUB_TOKEN
@@ -181,11 +181,11 @@ def sendSlackNotifcation()
 {
     if ( currentBuild.currentResult == "SUCCESS" ) {
         buildSummary = "Job_name: ${env.JOB_NAME}\n Build_id: ${env.BUILD_ID} \n Status: *SUCCESS*\n Build_url: ${BUILD_URL}\n Job_url: ${JOB_URL} \n"
-        slackSend( channel: "#devops", token: 'slack-token', color: 'good', message: "${buildSummary}")
+        slackSend( channel: "#devops-project", token: 'Slack-token', color: 'good', message: "${buildSummary}")
     }
     else {
         buildSummary = "Job_name: ${env.JOB_NAME}\n Build_id: ${env.BUILD_ID} \n Status: *FAILURE*\n Build_url: ${BUILD_URL}\n Job_url: ${JOB_URL}\n  \n "
-        slackSend( channel: "#devops", token: 'slack-token', color : "danger", message: "${buildSummary}")
+        slackSend( channel: "#devops-project", token: 'Slack-token', color : "danger", message: "${buildSummary}")
     }
 }
 
