@@ -98,10 +98,14 @@ pipeline {
         stage ('Docker Image Push') {
             steps {
                 
-                    withCredentials([usernamePassword(credentialsId: '7d70f096-dcbe-4f64-a3f4-fe76c6c548a9', passwordVariable: 'password', usernameVariable: 'username')]) {
-                    sh "docker login -u $username -p $password "
-                    sh 'docker push ${IMAGE_REPO}/${NAME}:${VERSION}-${GIT_COMMIT}'
-                    sh 'docker rmi  ${IMAGE_REPO}/${NAME}:${VERSION}-${GIT_COMMIT}'
+                   // withCredentials([usernamePassword(credentialsId: '7d70f096-dcbe-4f64-a3f4-fe76c6c548a9', passwordVariable: 'password', usernameVariable: 'username')]) {
+                   // sh "docker login -u $username -p $password "
+                   // sh 'docker push ${IMAGE_REPO}/${NAME}:${VERSION}-${GIT_COMMIT}'
+                  //  sh 'docker rmi  ${IMAGE_REPO}/${NAME}:${VERSION}-${GIT_COMMIT}'
+		      sh "docker login -u $dockername -p $dockerpass"
+                      sh 'docker push khushipatil12/project:v1.$BUILD_ID'
+                      sh 'docker push khushipatil12/project:latest'
+                      sh 'docker rmi khushipatil12/project:v1.$BUILD_ID khushipatil12/project:latest'
                     
                 }
             }
