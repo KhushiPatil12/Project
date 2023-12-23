@@ -31,7 +31,7 @@ pipeline {
             steps{
                 withSonarQubeEnv('SonarQube-server') {
                         sh '''mvn clean verify sonar:sonar \
-                        -Dsonar.projectKey=sqp_2adbfe699503571f6213c3fe62c0b25ba1f7c6cc \
+                        -Dsonar.projectKey=Devops-Project \
                         -Dsonar.projectName='DevOps-Project' \
                         -Dsonar.host.url=$Sonarurl \
                         -Dsonar.login=$Sonarlogin'''
