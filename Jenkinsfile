@@ -28,15 +28,14 @@ pipeline {
         }
 
         stage('SonarQube Analysis'){
-            steps{
-                withSonarQubeEnv('SonarQube-server') {
-                        sh '''mvn clean verify sonar:sonar \
-                        -Dsonar.projectKey=Devops-Project \
-                        -Dsonar.projectName='DevOps-Project' \
-                        -Dsonar.host.url=$Sonarurl \
-                        -Dsonar.login=$Sonarlogin'''
-                }
-            }
+        	steps{
+	            withSonarQubeEnv('SonarQube-server') {
+		            sh 'mvn clean verify sonar:sonar \
+                    -Dsonar.projectKey=Devsecops-Project \
+                    -Dsonar.host.url=$sonarurl \
+                    -Dsonar.token=$sonarlogin'
+            		}
+            	}
         }
 
         stage("Quality Gate") {
