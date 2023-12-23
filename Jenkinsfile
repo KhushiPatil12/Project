@@ -98,7 +98,7 @@ pipeline {
         stage ('Docker Image Push') {
             steps {
                 
-                   // withCredentials([usernamePassword(credentialsId: '7d70f096-dcbe-4f64-a3f4-fe76c6c548a9', passwordVariable: 'password', usernameVariable: 'username')]) {
+                   // withCredentials([usernamePassword(credentialsId: '7d70f096-dcbe-4f64-a3f4-fe76c6c548a9', passwordVariable: 'password', usernameVariable: 'username')]) 
                    // sh "docker login -u $username -p $password "
                    // sh 'docker push ${IMAGE_REPO}/${NAME}:${VERSION}-${GIT_COMMIT}'
                   //  sh 'docker rmi  ${IMAGE_REPO}/${NAME}:${VERSION}-${GIT_COMMIT}'
@@ -178,7 +178,7 @@ pipeline {
             sendSlackNotifcation()
             }
         }
-}
+
 
 def sendSlackNotifcation()
 {
