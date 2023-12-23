@@ -7,7 +7,7 @@ pipeline {
         GIT_COMMIT = sh(returnStdout: true, script: 'git rev-parse HEAD').trim()
         IMAGE_REPO = "khushipatil12"
         GIT_REPO_NAME = "Argocd"
-        GIT_USER_NAME = "Khushipatil12"
+        GIT_USER_NAME = "KhushiPatil12"
        
     }
 
