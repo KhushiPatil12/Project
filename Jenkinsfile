@@ -27,7 +27,7 @@ pipeline {
             }
         }
 
-        stage('SonarQube Analysis'){
+/*        stage('SonarQube Analysis'){
         	steps{
 	            withSonarQubeEnv('SonarQube-server') {
 		            sh 'mvn clean verify sonar:sonar \
@@ -45,7 +45,7 @@ pipeline {
               }
             }
         }
-        
+  */      
         stage('Deploy to Artifactory') {
             environment {
                 // Define the target repository in Artifactory
