@@ -45,7 +45,7 @@ pipeline {
               }
             }
         }
-  */      
+  
         stage('Deploy to Artifactory') {
             environment {
                 // Define the target repository in Artifactory
@@ -72,7 +72,7 @@ pipeline {
                 }
             }
         }
-        
+   */     
         stage('Docker  Build') {
             steps {
                
