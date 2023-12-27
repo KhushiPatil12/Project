@@ -111,7 +111,7 @@ pipeline {
             }
         }
         
-        stage('Clone/Pull k8s deployment Repo') {
+  /*   stage('Clone/Pull k8s deployment Repo') {
             steps {
                 script {
                     if (fileExists('Argocd')) {
@@ -190,7 +190,7 @@ def sendSlackNotifcation()
         buildSummary = "Job_name: ${env.JOB_NAME}\n Build_id: ${env.BUILD_ID} \n Status: *FAILURE*\n Build_url: ${BUILD_URL}\n Job_url: ${JOB_URL}\n  \n "
         slackSend( channel: "#devops-project", token: 'Slack-token', color : "danger", message: "${buildSummary}")
     }
-}
+} */
 
 
 
